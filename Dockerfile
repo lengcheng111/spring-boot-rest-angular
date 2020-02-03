@@ -1,38 +1,13 @@
-#
-# Hosts the Angular UI
-#
-
-# GET the Nginx from the official repo with Alpine lighweight linux engine
-FROM nginx:1.11.5-alpine
-
-EXPOSE 80
-RUN apk add --update curl &&  \
-    rm -rf /var/cache/apk/* && \
-    rm /etc/nginx/conf.d/default.conf
-
-#
-# Add the latest commit ref and fetch the latest tar file
-# Extract, move, cleanup & create a build version.txt file
-#
-#COPY .git/refs/heads/master /commit_hash.txt
-
-COPY .git/refs/remotes/origin/develop /commit_hash.txt
-
-
-RUN mkdir -p /var/www \
-    && cd /var/www \
-    && ( \
-      commit_hash=$( cat /commit_hash.txt | cut -c -8); \
-
-      mkdir webapp; \
-
-      date > webapp/version.txt; \
-      echo $commit_hash >> webapp/version.txt; \
-    )
-
-WORKDIR .
-
-COPY dist /var/www/webapp
-
-COPY deployment/nginx.conf /etc/nginx/nginx.conf
-COPY deployment/webapp.conf /etc/nginx/sites-enabled/webapp.conf
+# Stage 0, "build-stage", based on Node.js, to build and compile the frontend
+FROM tiangolo/node-frontend:10 as build-stage
+WORKDIR /app
+COPY package*.json /app/
+RUN npm install
+COPY ./ /app/
+ARG configuration=production
+RUN npm run build -- --output-path=./dist/out --configuration $configuration
+# Stage 1, based on Nginx, to have only the compiled app, ready for production with Nginx
+FROM nginx:1.15
+COPY --from=build-stage /app/dist/out/ /usr/share/nginx/html
+# Copy the default nginx.conf provided by tiangolo/node-frontend
+COPY --from=build-stage /nginx.conf /etc/nginx/conf.d/default.conf
