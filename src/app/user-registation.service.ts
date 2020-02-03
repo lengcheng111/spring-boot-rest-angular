@@ -6,22 +6,23 @@ import { HttpClient } from '@angular/common/http';
 })
 export class UserRegistationService {
 
+  api: any = 'http://172.17.0.5:9090/';
+
   constructor(private http: HttpClient) { }
 
-
   public doRegistration(user: any) {
-    return this.http.post('http://localhost:9090/register', user, { responseType: 'text' as 'json' });
+    return this.http.post(this.api + 'register', user, { responseType: 'text' as 'json' });
   }
 
   public getUsers() {
-    return this.http.get('http://localhost:9090/getAllUsers');
+    return this.http.get(this.api + 'getAllUsers');
   }
 
   public getUserByEmail(email: any) {
-    return this.http.get('http://localhost:9090/findUser/' + email);
+    return this.http.get(this.api + 'findUser/' + email);
   }
 
   public deleteUser(id: any) {
-    return this.http.delete('http://localhost:9090/cancel/' + id);
+    return this.http.delete(this.api + 'cancel/' + id);
   }
 }
