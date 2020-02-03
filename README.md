@@ -16,7 +16,8 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 
 ## Build backend
 ```sh 
-  docker build -t register-service .
+  $ docker build -t register-service .
+  $ docker run  --name register-service -d -p 9090:8080 register-service
 ```
 
 ## Running unit tests
