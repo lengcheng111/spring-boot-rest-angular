@@ -43,3 +43,11 @@ yarn-error.log
 
 .notes.md
 baseline.json
+
+### Java ###
+# Compiled class file
+*.class
+target/
+.classpath
+.project
+.settings/

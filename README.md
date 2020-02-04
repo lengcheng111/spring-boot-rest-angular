@@ -19,6 +19,19 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
   $ docker build -t register-service .
   $ docker run  --name register-service -d -p 9090:8080 register-service
 ```
+## Build postgres server
+```sh
+  $ docker run --name postgresql -itd --restart always \
+    --publish 5433:5432 \
+    --volume /srv/docker/postgresql:/var/lib/postgresql \
+    --env 'DB_USER=postgres' \
+    --env 'DB_PASS=123456' \
+```
+## Build client
+```sh
+  $ docker build -t client-v2:prod --build-arg configuration="" .
+  $ docker run --name register-ui -d -p 4200:4200
+```
 
 ## Running unit tests
 
